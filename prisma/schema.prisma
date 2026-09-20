@@ -1,0 +1,38 @@
+model Videos {
+  id         String      @id @default(uuid())
+  youtubeUrl String
+  youtubeId  String
+  title      String
+  createdAt  DateTime    @default(now())
+  summaries  Summaries[]
+  jobs       Jobs[]
+}
+
+model Summaries {
+  id        String   @id @default(uuid())
+  videoId   String
+  video     Videos   @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([videoId])
+}
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model Jobs {
+  id           String    @id @default(uuid())
+  videoId      String
+  video        Videos    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  status       JobStatus @default(PENDING)
+  errorMessage String?
+  createdAt    DateTime  @default(now())
+  completedAt  DateTime?
+
+  @@index([videoId])
+}
